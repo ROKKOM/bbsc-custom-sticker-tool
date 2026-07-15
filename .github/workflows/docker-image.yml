@@ -1,4 +1,4 @@
-name: Build and Push Docker Img
+name: Build and Push Docker Image
 
 on:
   push:
@@ -26,6 +26,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Lowercase the image owner name
+        id: vars
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -33,5 +37,5 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/sticker-outline-service:latest
-            ghcr.io/${{ github.repository_owner }}/sticker-outline-service:${{ github.sha }}
+            ghcr.io/${{ steps.vars.outputs.owner }}/sticker-outline-service:latest
+            ghcr.io/${{ steps.vars.outputs.owner }}/sticker-outline-service:${{ github.sha }}
